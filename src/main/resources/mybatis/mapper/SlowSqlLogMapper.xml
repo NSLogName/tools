@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xcty.tools.dao.mapper.SlowSqlLogMapper">
+  <resultMap id="BaseResultMap" type="com.xcty.tools.dao.model.SlowSqlLog">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="host_address" jdbcType="VARCHAR" property="hostAddress" />
+    <result column="db_name" jdbcType="VARCHAR" property="dbName" />
+    <result column="db_engine" jdbcType="INTEGER" property="dbEngine" />
+    <result column="execution_start_time" jdbcType="VARCHAR" property="executionStartTime" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.xcty.tools.dao.model.SlowSqlLogWithBLOBs">
+    <result column="sql_text" jdbcType="LONGVARCHAR" property="sqlText" />
+    <result column="query_times" jdbcType="LONGVARCHAR" property="queryTimes" />
+    <result column="lock_times" jdbcType="LONGVARCHAR" property="lockTimes" />
+    <result column="parse_row_counts" jdbcType="LONGVARCHAR" property="parseRowCounts" />
+    <result column="return_row_rounts" jdbcType="LONGVARCHAR" property="returnRowRounts" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, host_address, db_name, db_engine, execution_start_time, memo, create_time
+  </sql>
+  <sql id="Blob_Column_List">
+    sql_text, query_times, lock_times, parse_row_counts, return_row_rounts
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from slow_sql_log
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from slow_sql_log
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <!-- 批量插入 -->
+  <insert id="insertSlowSqlLogWithBLOBsBatch" parameterType="java.util.List">
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into slow_sql_log
+    (host_address, db_name,
+    db_engine, sql_text, query_times,
+    lock_times, parse_row_counts, return_row_rounts, execution_start_time, memo, create_time)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.hostAddress},
+      #{item.dbName},
+      #{item.dbEngine},
+      #{item.sqlText},
+      #{item.queryTimes},
+      #{item.lockTimes},
+      #{item.parseRowCounts},
+      #{item.returnRowRounts},
+      #{item.executionStartTime},
+      #{item.memo},
+      #{item.createTime}
+      )
+    </foreach>
+  </insert>
+
+  <insert id="insert" parameterType="com.xcty.tools.dao.model.SlowSqlLogWithBLOBs">
+    insert into slow_sql_log (id, host_address, db_name, 
+      db_engine, execution_start_time, memo, 
+      create_time, sql_text, query_times, 
+      lock_times, parse_row_counts, return_row_rounts
+      )
+    values (#{id,jdbcType=INTEGER}, #{hostAddress,jdbcType=VARCHAR}, #{dbName,jdbcType=VARCHAR}, 
+      #{dbEngine,jdbcType=INTEGER}, #{executionStartTime,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=VARCHAR}, #{sqlText,jdbcType=LONGVARCHAR}, #{queryTimes,jdbcType=LONGVARCHAR}, 
+      #{lockTimes,jdbcType=LONGVARCHAR}, #{parseRowCounts,jdbcType=LONGVARCHAR}, #{returnRowRounts,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xcty.tools.dao.model.SlowSqlLogWithBLOBs">
+    insert into slow_sql_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="hostAddress != null">
+        host_address,
+      </if>
+      <if test="dbName != null">
+        db_name,
+      </if>
+      <if test="dbEngine != null">
+        db_engine,
+      </if>
+      <if test="executionStartTime != null">
+        execution_start_time,
+      </if>
+      <if test="memo != null">
+        memo,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="sqlText != null">
+        sql_text,
+      </if>
+      <if test="queryTimes != null">
+        query_times,
+      </if>
+      <if test="lockTimes != null">
+        lock_times,
+      </if>
+      <if test="parseRowCounts != null">
+        parse_row_counts,
+      </if>
+      <if test="returnRowRounts != null">
+        return_row_rounts,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="hostAddress != null">
+        #{hostAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="dbName != null">
+        #{dbName,jdbcType=VARCHAR},
+      </if>
+      <if test="dbEngine != null">
+        #{dbEngine,jdbcType=INTEGER},
+      </if>
+      <if test="executionStartTime != null">
+        #{executionStartTime,jdbcType=VARCHAR},
+      </if>
+      <if test="memo != null">
+        #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="sqlText != null">
+        #{sqlText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="queryTimes != null">
+        #{queryTimes,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="lockTimes != null">
+        #{lockTimes,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="parseRowCounts != null">
+        #{parseRowCounts,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="returnRowRounts != null">
+        #{returnRowRounts,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xcty.tools.dao.model.SlowSqlLogWithBLOBs">
+    update slow_sql_log
+    <set>
+      <if test="hostAddress != null">
+        host_address = #{hostAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="dbName != null">
+        db_name = #{dbName,jdbcType=VARCHAR},
+      </if>
+      <if test="dbEngine != null">
+        db_engine = #{dbEngine,jdbcType=INTEGER},
+      </if>
+      <if test="executionStartTime != null">
+        execution_start_time = #{executionStartTime,jdbcType=VARCHAR},
+      </if>
+      <if test="memo != null">
+        memo = #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="sqlText != null">
+        sql_text = #{sqlText,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="queryTimes != null">
+        query_times = #{queryTimes,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="lockTimes != null">
+        lock_times = #{lockTimes,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="parseRowCounts != null">
+        parse_row_counts = #{parseRowCounts,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="returnRowRounts != null">
+        return_row_rounts = #{returnRowRounts,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.xcty.tools.dao.model.SlowSqlLogWithBLOBs">
+    update slow_sql_log
+    set host_address = #{hostAddress,jdbcType=VARCHAR},
+      db_name = #{dbName,jdbcType=VARCHAR},
+      db_engine = #{dbEngine,jdbcType=INTEGER},
+      execution_start_time = #{executionStartTime,jdbcType=VARCHAR},
+      memo = #{memo,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=VARCHAR},
+      sql_text = #{sqlText,jdbcType=LONGVARCHAR},
+      query_times = #{queryTimes,jdbcType=LONGVARCHAR},
+      lock_times = #{lockTimes,jdbcType=LONGVARCHAR},
+      parse_row_counts = #{parseRowCounts,jdbcType=LONGVARCHAR},
+      return_row_rounts = #{returnRowRounts,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xcty.tools.dao.model.SlowSqlLog">
+    update slow_sql_log
+    set host_address = #{hostAddress,jdbcType=VARCHAR},
+      db_name = #{dbName,jdbcType=VARCHAR},
+      db_engine = #{dbEngine,jdbcType=INTEGER},
+      execution_start_time = #{executionStartTime,jdbcType=VARCHAR},
+      memo = #{memo,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
